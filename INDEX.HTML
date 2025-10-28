@@ -1,0 +1,180 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>ZapatillasEliza — Nike · Puma · Adidas</title>
+  <style>
+    :root{--bg:#f6f7fb;--card:#fff;--accent:#111;--muted:#6b7280}
+    *{box-sizing:border-box}
+    body{font-family:Inter, system-ui, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial; margin:0; background:linear-gradient(180deg,#f3f6ff 0%,var(--bg) 100%); color:var(--accent)}
+    header{background:#0f1724;color:#fff;padding:22px 24px;display:flex;gap:16px;align-items:center;justify-content:space-between}
+    .brand{display:flex;gap:12px;align-items:center}
+    .logo{font-weight:800;font-size:20px}
+    nav .filters{display:flex;gap:10px}
+    button, .pill{background:transparent;border:1px solid rgba(255,255,255,0.12);color:#fff;padding:8px 12px;border-radius:999px;cursor:pointer}
+    main{padding:20px}
+    .hero{display:flex;gap:20px;align-items:center;background:linear-gradient(90deg, rgba(255,255,255,0.06), rgba(255,255,255,0.02));padding:18px;border-radius:12px;margin-bottom:18px}
+    .hero .left{flex:1}
+    .hero h1{margin:0;font-size:22px}
+    .hero p{margin:6px 0;color:var(--muted)}
+    .layout{display:grid;grid-template-columns:260px 1fr;gap:18px}
+    aside{background:var(--card);padding:14px;border-radius:12px;box-shadow:0 6px 18px rgba(12,14,20,0.06)}
+    .section-title{font-weight:700;margin-bottom:8px}
+    .brand-list, .category-list{display:flex;flex-direction:column;gap:8px}
+    .inventory{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:14px}
+    .card{background:var(--card);padding:12px;border-radius:12px;box-shadow:0 8px 20px rgba(12,14,20,0.04);display:flex;flex-direction:column;gap:10px}
+    .thumb{height:140px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:linear-gradient(135deg,#fff,#f3f5ff);font-size:36px}
+    .meta{display:flex;justify-content:space-between;align-items:center}
+    .name{font-weight:700}
+    .price{font-weight:800}
+    .tags{font-size:12px;color:var(--muted)}
+    .actions{display:flex;gap:8px}
+    .btn{padding:8px 10px;border-radius:8px;border:none;cursor:pointer}
+    .btn.primary{background:#111827;color:#fff}
+    .btn.ghost{background:transparent;border:1px solid #e6e7ea}
+    .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);align-items:center;justify-content:center;z-index:10}
+    .modal-content{background:white;padding:20px;border-radius:10px;max-width:400px;width:90%;text-align:center}
+    footer{padding:18px;text-align:center;color:var(--muted)}
+  </style>
+</head>
+<body>
+  <header>
+    <div class="brand">
+      <div class="logo">ZapatillasEliza</div>
+      <div style="color:var(--muted)">Tienda demo · Nike · Puma · Adidas</div>
+    </div>
+    <nav>
+      <div class="filters">
+        <button onclick="showAll()">Mostrar todo</button>
+        <button onclick="filterBrand('Nike')">Nike</button>
+        <button onclick="filterBrand('Puma')">Puma</button>
+        <button onclick="filterBrand('Adidas')">Adidas</button>
+      </div>
+    </nav>
+  </header>
+
+  <main>
+    <div class="hero">
+      <div class="left">
+        <h1>Bienvenido a ZapatillasEliza</h1>
+        <p>Todas las marcas y categorías en un solo lugar — Niño, Niña, Hombre y Mujer. Usa los filtros para ver lo que quieras.</p>
+      </div>
+    </div>
+
+    <div class="layout">
+      <aside>
+        <div class="section">
+          <div class="section-title">Marcas</div>
+          <div class="brand-list">
+            <label><input type="radio" name="brand" value="" checked onchange="renderInventory()"> Todas</label>
+            <label><input type="radio" name="brand" value="Nike" onchange="renderInventory()"> Nike</label>
+            <label><input type="radio" name="brand" value="Puma" onchange="renderInventory()"> Puma</label>
+            <label><input type="radio" name="brand" value="Adidas" onchange="renderInventory()"> Adidas</label>
+          </div>
+        </div>
+
+        <hr style="margin:12px 0;border:none;border-top:1px solid #eef2ff"/>
+
+        <div class="section">
+          <div class="section-title">Categorías</div>
+          <div class="category-list">
+            <label><input type="checkbox" value="Niño" onchange="renderInventory()"> Niño</label>
+            <label><input type="checkbox" value="Niña" onchange="renderInventory()"> Niña</label>
+            <label><input type="checkbox" value="Hombre" onchange="renderInventory()"> Hombre</label>
+            <label><input type="checkbox" value="Mujer" onchange="renderInventory()"> Mujer</label>
+          </div>
+        </div>
+      </aside>
+
+      <section>
+        <h2>Catálogo — Todos los productos</h2>
+        <div id="inventory" class="inventory"></div>
+      </section>
+    </div>
+
+    <div id="paymentModal" class="modal">
+      <div class="modal-content">
+        <h3>Simulador de Pasarela de Pago</h3>
+        <p>Producto: <span id="paymentProduct"></span></p>
+        <form onsubmit="simulatePayment(event)">
+          <input type="text" id="cardName" placeholder="Nombre en la tarjeta" required style="width:90%;padding:8px;margin:6px 0"><br>
+          <input type="text" id="cardNumber" placeholder="Número de tarjeta" maxlength="16" required style="width:90%;padding:8px;margin:6px 0"><br>
+          <input type="text" id="expDate" placeholder="MM/AA" maxlength="5" required style="width:90%;padding:8px;margin:6px 0"><br>
+          <input type="password" id="cvv" placeholder="CVV" maxlength="3" required style="width:90%;padding:8px;margin:6px 0"><br>
+          <button type="submit" class="btn primary">Pagar</button>
+          <button type="button" class="btn ghost" onclick="closePayment()">Cancelar</button>
+        </form>
+        <div id="paymentStatus" style="margin-top:10px;color:green;font-weight:bold"></div>
+      </div>
+    </div>
+
+  </main>
+
+  <footer>
+    ZapatillasEliza © 2025 — Simulador de tienda y pasarela de pago.
+  </footer>
+
+  <script>
+    const inventoryData = [
+      {id:1,brand:'Nike',name:'Air Zoom Kid X',category:'Niño',price:85,stock:12},
+      {id:2,brand:'Nike',name:'React Runner Girl',category:'Niña',price:95,stock:6},
+      {id:3,brand:'Nike',name:'Air Max 270',category:'Hombre',price:140,stock:4},
+      {id:4,brand:'Nike',name:'Air Force 1',category:'Mujer',price:120,stock:8},
+      {id:5,brand:'Puma',name:'RS-X Mini',category:'Niño',price:70,stock:10},
+      {id:6,brand:'Puma',name:'Future Rider',category:'Niña',price:75,stock:14},
+      {id:7,brand:'Puma',name:'Cali Sport',category:'Mujer',price:110,stock:5},
+      {id:8,brand:'Puma',name:'Suede Classic',category:'Hombre',price:100,stock:7},
+      {id:9,brand:'Adidas',name:'Ultraboost Jr',category:'Niño',price:90,stock:9},
+      {id:10,brand:'Adidas',name:'Forum Low',category:'Niña',price:85,stock:11},
+      {id:11,brand:'Adidas',name:'NMD R1',category:'Hombre',price:130,stock:3},
+      {id:12,brand:'Adidas',name:'Gazelle',category:'Mujer',price:95,stock:2},
+      {id:13,brand:'Nike',name:'Pegasus Turbo',category:'Hombre',price:150,stock:6},
+      {id:14,brand:'Puma',name:'Ignite Evo',category:'Mujer',price:105,stock:8},
+      {id:15,brand:'Adidas',name:'Supernova',category:'Hombre',price:125,stock:10},
+      {id:16,brand:'Nike',name:'Blazer Mid',category:'Mujer',price:115,stock:7},
+      {id:17,brand:'Adidas',name:'Stan Smith',category:'Mujer',price:110,stock:10},
+      {id:18,brand:'Puma',name:'Velocity Nitro',category:'Hombre',price:130,stock:5},
+      {id:19,brand:'Nike',name:'Zoom Freak',category:'Niño',price:95,stock:9},
+      {id:20,brand:'Adidas',name:'Ozweego',category:'Niña',price:100,stock:7}
+    ];
+
+    function renderInventory(){
+      const container=document.getElementById('inventory'); container.innerHTML='';
+      inventoryData.forEach(p=>{
+        const card=document.createElement('div');
+        card.className='card';
+        card.innerHTML=`<div class='thumb'>${p.brand[0]}</div>
+                        <div class='meta'><div class='name'>${p.name}</div><div class='price'>$${p.price}</div></div>
+                        <div class='tags'>${p.brand} • ${p.category}</div>
+                        <div class='actions'>
+                          <button class='btn primary' onclick="openPayment('${p.name}')">Comprar</button>
+                          <button class='btn ghost' onclick="alert('${p.name}\nMarca: ${p.brand}\nPrecio: $${p.price}')">Info</button>
+                        </div>`;
+        container.appendChild(card);
+      });
+    }
+
+    function openPayment(product){
+      document.getElementById('paymentProduct').textContent=product;
+      document.getElementById('paymentModal').style.display='flex';
+      document.getElementById('paymentStatus').textContent='';
+    }
+
+    function closePayment(){
+      document.getElementById('paymentModal').style.display='none';
+    }
+
+    function simulatePayment(e){
+      e.preventDefault();
+      const status=document.getElementById('paymentStatus');
+      status.textContent='Procesando pago...';
+      setTimeout(()=>{
+        status.textContent='Pago aprobado ✅';
+      },1500);
+    }
+
+    document.addEventListener('DOMContentLoaded',renderInventory);
+  </script>
+</body>
+</html>
